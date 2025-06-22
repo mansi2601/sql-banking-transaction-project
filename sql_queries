@@ -1,0 +1,88 @@
+-- Find Total amount(only success) transactions done  by each user
+
+select name as User_name, sum(dbt.amount) As Total_Amount
+from dbo.users dbu
+join dbo.accounts dba
+on dbu.user_id= dba.user_id
+join dbo.transactions dbt
+on dba.account_id= dbt.account_id
+where dbt.status='success'
+group by dbu.name;
+
+
+-- Find top 5 users who did highest transactions amount regardless of status(success/failure)
+
+select name as User_name, sum(dbt.amount) As Total_Amount
+from dbo.users dbu
+join dbo.accounts dba
+on dbu.user_id= dba.user_id
+join dbo.transactions dbt
+on dba.account_id= dbt.account_id
+group by dbu.name
+order by Total_Amount desc;
+
+-- Failed transactions per city
+
+select  city, count(txn_id) as Failed_transaction_count from dbo.users as dbu
+join dbo.accounts as dba
+on dba.user_id= dbu.user_id
+join dbo.transactions as dbt
+on dba.account_id = dbt.account_id
+where status='Failed'
+group by city;
+
+-- Average transaction amount per day
+
+select cast((txn_date)as date) as Per_day , cast(avg(amount) as int)as Average_amount from dbo.transactions
+group by cast((txn_date)as date);
+
+
+-- Suspicious Transaction activity
+
+Select t1.account_id , t1.amount , t1.txn_id as txn1, t2.txn_id as txn2,
+abs(datediff(minute, t1.txn_date, t2.txn_date)) as Timegap
+from dbo.transactions as t1
+join dbo.transactions t2
+on t1.account_id = t2.account_id
+and t1.amount >= 100000
+and t2.amount >= 100000
+AND t1.txn_id <> t2.txn_id
+and t1.txn_id < t2.txn_id
+and abs(datediff(minute, t1.txn_date, t2.txn_date))<=5 ;
+
+
+-- Top 5 high spending users
+
+select top 5 dbu.name as User_name, sum(dbt.amount)as Total_Spent 
+from dbo.users as dbu
+join dbo.accounts as dba
+on dbu.user_id= dba.user_id
+join dbo.transactions as dbt
+on dbt.account_id= dba.account_id 
+where dbt.status= 'success'
+group by dbu.name 
+order by total_Spent desc;
+
+
+--City wise transaction volume and Total Amount
+
+select city, sum(amount) as Total_amount from dbo.users as dbu
+join dbo.accounts as dba
+on dba.user_id= dbu.user_id
+join dbo.transactions as dbt
+on dba.account_id= dbt.account_id
+where dbt.status='success'
+group by city
+order by Total_amount desc ;
+
+
+
+--Monthly Transaction Trends
+
+select format(txn_Date, 'yyyy-MM') as Month,
+count(txn_id) as Total_Transaction,
+sum(amount) as Total_Amount_spend
+from dbo.transactions
+where status='success'
+group by format(txn_Date, 'yyyy-MM')
+order by month;
