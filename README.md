@@ -35,7 +35,8 @@ To analyze banking transactions using SQL to identify high-value customers, tran
 ---
 
 ## 📸 Screenshots:
-All output screenshots are in the `screenshots/` folder
+All output screenshots are in the `./screenshots.zip` folder
+
 
 ---
 
