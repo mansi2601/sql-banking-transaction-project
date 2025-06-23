@@ -1,4 +1,3 @@
-# sql-banking-transaction-project
 # 🏦 SQL Banking Transactions Project
 
 ## 📌 Objective:
